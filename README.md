@@ -43,13 +43,3 @@ scikit-learn for machine learning model building and evaluation
 pandas and numpy for data processing
 
 Breast Cancer Wisconsin (Diagnostic) dataset from sklearn
-
-## Installation and Local Setup (Optional)
-To run this app locally:
-
-bash
-git clone <repository_url>
-cd <repository_folder>
-pip install -r requirements.txt
-streamlit run app.py
-Ensure all dependencies in requirements.txt (e.g., streamlit, scikit-learn, pandas, numpy) are installed.

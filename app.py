@@ -5,14 +5,16 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
 from sklearn.impute import SimpleImputer
 
-#  Load dataset
+# ----------------------
+# Load dataset
+# ----------------------
 df = pd.read_csv('data.csv')
 
 # Map diagnosis to 0/1
 df['diagnosis'] = df['diagnosis'].map({'M': 1, 'B': 0})
 df = df.drop(columns=['id'])
 
-#  Select only the 17 features
+# Select only the 17 features
 features = [
     'radius_mean', 'texture_mean', 'smoothness_mean', 'compactness_mean', 'concavity_mean',
     'symmetry_mean', 'radius_se', 'compactness_se', 'concavity_se', 'concave points_se',
@@ -22,7 +24,7 @@ features = [
 X = df[features]
 y = df['diagnosis']
 
-#  Handle missing values
+# Handle missing values
 imputer = SimpleImputer(strategy='mean')
 X_imputed = imputer.fit_transform(X)
 
@@ -39,7 +41,9 @@ svm_linear.fit(X_train_scaled, y_train)
 svm_rbf = SVC(kernel='rbf', C=1, gamma='scale', probability=True)
 svm_rbf.fit(X_train_scaled, y_train)
 
-#  Streamlit UI
+# ----------------------
+# Streamlit UI
+# ----------------------
 st.set_page_config(page_title="Breast Cancer Classification", layout="wide")
 st.title("🔬 Breast Cancer Tumor Classification")
 st.markdown("Predict whether a tumor is **Benign** or **Malignant** using SVM.")
@@ -49,16 +53,22 @@ kernel_choice = st.sidebar.selectbox("Select SVM Kernel", ["Linear", "RBF"])
 
 st.subheader("Enter Tumor Features")
 
-# Organize inputs into 3 columns
 cols = st.columns(3)
 user_input = {}
+
 for i, feature in enumerate(features):
-    col = cols[i % 3]  # distribute features across 3 columns
-    # Use slider for better UI; set min/max based on typical dataset ranges
-    min_val = float(X[feature].min())
-    max_val = float(X[feature].max())
-    mean_val = float(X[feature].mean())
-    user_input[feature] = col.slider(feature, min_value=min_val, max_value=max_val, value=mean_val)
+    col = cols[i % 3]
+    max_val = max(abs(float(X[feature].min())), abs(float(X[feature].max())))
+    user_input[feature] = col.number_input(
+        label=feature,
+        min_value=-max_val,   # negative value correctly passed
+        max_value=max_val,    # positive value correctly passed
+        value=0.0,            # default neutral value
+        step=0.01,
+        format="%.4f"
+    )
+
+
 
 input_df = pd.DataFrame([user_input])
 
